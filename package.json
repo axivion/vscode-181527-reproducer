@@ -1,0 +1,284 @@
+{
+    "name": "vscodeplugin",
+    "displayName": "Axivion Suite",
+    "publisher": "Axivion",
+    "description": "Stopping Software Erosion. Build date: 1970-01-01 00:00:00 +00:00.",
+    "version": "7.6.9999",
+    "repository": {},
+    "private": true,
+    "engines": {
+        "vscode": "^1.66.0"
+    },
+    "scripts": {
+        "build": "node bundle.js dev",
+        "watch": "node bundle.js watch",
+        "bundle": "node bundle.js release",
+        "compile": "tsc --build",
+        "package": "pnpm run compile && pnpm run bundle && vsce package --no-dependencies --out /home/boschar/Repos/bauhaus/build/vscodeplugin/Axivion.VSCodePlugin.vsix",
+        "test": "jest --detectOpenHandles",
+	    "test:integration": "node out/integrationTest/runIntegrationTests.js",
+        "lint": "pnpm run tsc-all && pnpm run eslint-all",
+        "eslint": "eslint --max-warnings=29 --no-ignore --ext js,ts",
+        "eslint-all": "eslint src pages",
+        "eslint-files": "eslint",
+        "self-analysis": "pnpm run eslint-all --format checkstyle --output-file vscode-eslint-report.xml; exit 0",
+        "tsc-all": "tsc --noEmit",
+        "tsc-files": "pnpm run tsc-files --noEmit"
+    },
+    "jest": {
+        "testTimeout": 300000,
+        "collectCoverage": true,
+        "coverageReporters": ["html"],
+        "globals": {
+            "ts-jest": {
+                "tsconfig": "tsconfig.json"
+            }
+        },
+        "moduleFileExtensions": ["ts", "js"],
+        "transform": {
+            "^.+\\.(ts|tsx)$": "ts-jest"
+        },
+        "testMatch": ["**/test/**/*.test.ts"],
+        "testEnvironment": "node"
+    },
+    "devDependencies": {
+        "@jest/types": "^29.5.0",
+        "@types/diff": "^5.0.3",
+        "@types/glob": "^7.2.0",
+        "@types/jest": "27.4.1",
+        "@types/node": "^14.18.43",
+        "@types/node-fetch": "^2.6.3",
+        "@types/uuid": "^8.3.4",
+        "@types/vscode": "1.53.0",
+        "@types/xml2js": "^0.4.11",
+        "@typescript-eslint/eslint-plugin": "^5.59.2",
+        "@typescript-eslint/parser": "^5.59.2",
+        "@vscode/test-electron": "2.1.2",
+        "@vscode/vsce": "^2.19.0",
+        "esbuild": "^0.14.54",
+        "eslint": "^8.39.0",
+        "eslint-plugin-prettier": "^4.2.1",
+        "glob": "^7.2.3",
+        "jest": "27.5.1",
+        "jest-environment-node": "27.5.1",
+        "minimatch": "^7.4.6",
+        "prettier": "^2.8.8",
+        "ts-jest": "^27.1.5",
+        "ts-node": "^10.9.1",
+        "tsc-files": "^1.1.3",
+        "typescript": "^4.9.5",
+        "uuid": "^8.3.2"
+    },
+    "dependencies": {
+        "chokidar": "^3.5.3",
+        "diff": "^5.1.0",
+        "encoding": "^0.1.13",
+        "kind-of": "^6.0.3",
+        "lru-cache": "^7.18.3",
+        "node-fetch": "2.6.7",
+        "vscode-uri": "^3.0.7",
+        "xml2js": "^0.4.23"
+    },
+    "main": "./out/extension.js",
+    "icon": "out/icons/ax.png",
+    "activationEvents": ["onStartupFinished"],
+    "extensionKind": ["workspace", "ui"],
+    "capabilities": {
+        "untrustedWorkspaces": {
+            "supported": "limited",
+            "restrictedConfigurations": [
+                "axivion.axivionSuiteDirectory",
+                "axivion.localBuild",
+                "axivion.singleFileAnalysis"
+            ]
+        }
+    },
+    "contributes": {
+        "commands": [
+            {
+                "command": "axivion.showIssuesView",
+                "title": "Axivion: Show Issues View"
+            },
+            {
+                "command": "axivion.reloadIssuesView",
+                "title": "Axivion: Reload Issues View",
+                "icon": {
+                    "light": "out/icons/refresh_icon.svg",
+                    "dark": "out/icons/refresh_icon_darkmode.svg"
+                }
+            },
+            {
+                "command": "axivion.forceReload",
+                "title": "Axivion: Clean Caches and Reload Issues View"
+            },
+            {
+                "command": "axivion.showIssueProperties",
+                "title": "Axivion: Show Issue Properties"
+            },
+            {
+                "command": "axivion.toggleMarkers",
+                "title": "Axivion: Toggle Editor Markers"
+            },
+            {
+                "command": "axivion.showOutputChannel",
+                "title": "Axivion: Show Output Channel"
+            },
+            {
+                "command": "axivion.startLocalBuild",
+                "title": "Axivion: Start a Local Build"
+            },
+            {
+                "command": "axivion.startLocalDashboard",
+                "title": "Axivion: Start a Local Dashboard"
+            },
+            {
+                "command": "axivion.stopLocalDashboard",
+                "title": "Axivion: Stop a Local Dashboard"
+            },
+            {
+                "command": "axivion.singleFileAnalysis",
+                "title": "Axivion: Run Single File Analysis"
+            },
+            {
+                "command": "axivion.clearSingleFileAnalysisResults",
+                "title": "Axivion: Clear Single File Analysis Results"
+            }
+        ],
+        "menus": {
+            "editor/title": [
+                {
+                    "command": "axivion.reloadIssuesView",
+                    "when": "showAxivionIssuesView",
+                    "group": "navigation"
+                }
+            ],
+            "explorer/context": [
+                {
+                    "command": "axivion.singleFileAnalysis"
+                }
+            ]
+        },
+        "configuration": {
+            "type": "object",
+            "title": "Axivion",
+            "properties": {
+                "axivion.dashboards": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "description": "Dashboard definition.",
+                        "properties": {
+                            "id": {
+                                "type": "string",
+                                "description": "Identifier shown in the Issues View."
+                            },
+                            "url": {
+                                "type": "string",
+                                "description": "Url to the dashboard instance."
+                            },
+                            "username": {
+                                "type": "string",
+                                "description": "Existing username in the dashboard instance."
+                            }
+                        }
+                    },
+                    "default": [],
+                    "description": "Configure dashboard instances."
+                },
+                "axivion.pathMappings": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "description": "Path Mapping definition.",
+                        "properties": {
+                            "analysisProject": {
+                                "type": "string",
+                                "description": "Existing project in a dashboard."
+                            },
+                            "analysisPath": {
+                                "type": "string",
+                                "description": "Relative path describing a directory within the analysis project."
+                            },
+                            "localPath": {
+                                "type": "string",
+                                "description": "Absolute path to the project on your file system."
+                            }
+                        }
+                    },
+                    "default": [],
+                    "description": "Mappings between analysis and local project paths."
+                },
+                "axivion.logLevel": {
+                    "type": "string",
+                    "enum": ["trace", "debug", "info", "warn", "error"],
+                    "default": "warn",
+                    "description": "Log level for the axivion output channel."
+                },
+                "axivion.defaultSettingsSource": {
+                    "type": "string",
+                    "enum": ["workspace", "user", "global"],
+                    "default": "workspace",
+                    "description": "Where the Axivion plugin should put generated path mappings."
+               },
+                "axivion.axivionSuiteDirectory": {
+                    "type": "string",
+                    "scope": "resource",
+                    "description": "Path to the Axivion Suite installation directory."
+                },
+                "axivion.bauhausPython": {
+                    "type": "string",
+                    "scope": "resource",
+                    "description": "Path to a Python executable. Is used for the environment variable BAUHAUS_PYTHON."
+                },
+                "axivion.javaHome": {
+                    "type": "string",
+                    "default": "",
+                    "description": "Path to a Java installation. Calls to Axivion Suite tools will use this version."
+                },
+                "axivion.localBuild": {
+                    "type": "object",
+                    "description": "Mappings of project names and their settings for a local build.",
+                    "default": {},
+                    "properties": {
+                        "[projectName]": {
+                            "type": "object",
+                            "properties": {
+                                "command": {
+                                    "type": "string",
+                                    "description": "axivion_ci command or launch script for the local analysis."
+                                },
+                                "axivionSuiteDirectory": {
+                                    "type": "string",
+                                    "description": "Path to the Axivion Suite installation directory."
+                                }
+                            },
+                            "description": "Mapping of project names to local build configurations."
+                        }
+                    }
+                },
+                "axivion.singleFileAnalysis": {
+                    "type": "object",
+                    "description": "Mappings of project names and their settings for a single file analysis.",
+                    "default": {},
+                    "scope": "resource",
+                    "properties": {
+                        "command": {
+                            "type": "string",
+                            "description": "Command or launch script which is responsible to build a IR and run axivion_analysis."
+                        },
+                        "bauhausConfig": {
+                            "type": "string",
+                            "description": "Directory to the Axivion Suite configuration files. Is used for the environment variable BAUHAUS_CONFIG."
+                        },
+                        "separatorFormat": {
+                            "type": "string",
+                            "enum": ["native", "/", "\\", "\\\\"],
+                            "default": "native",
+                            "description": "Path separator to use for the file before passing it to the command."
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

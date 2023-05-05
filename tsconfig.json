@@ -1,0 +1,27 @@
+{
+    "compilerOptions": {
+        "rootDir": ".",
+        "outDir": "./out",
+        "module": "commonjs",
+        "target": "es2019",
+        "lib": [
+            "es2019"
+        ],
+        "sourceMap": true,
+        "strict": true,
+        "strictNullChecks": true,
+        "noImplicitReturns": true,
+        "noFallthroughCasesInSwitch": true,
+        "noUnusedParameters": true
+    },
+    "references": [
+        {
+            "path": "./src"
+        },
+        {
+            "path": "./integrationTest"
+        }
+    ],
+    "files": [],
+    "include": []
+}
